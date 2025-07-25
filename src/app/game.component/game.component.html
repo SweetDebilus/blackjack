@@ -1,0 +1,71 @@
+<div class="game">
+  <h2>Points: {{ points }}</h2>
+  <h3>Bet: {{ bet }}</h3>
+
+  <div class="bet-controls" *ngIf="!gameStarted && !gameOver">
+    <button (click)="increaseBet()">⬆️</button>
+    <button (click)="decreaseBet()">⬇️</button>
+    <button (click)="allIn()">All In</button>
+    <button (click)="startRound()" [disabled]="gameStarted || bet === 0 || bet > points">Start Game</button>
+    <button (click)="goToMenu()">Main Menu</button>
+  </div>
+
+  <div *ngIf="gameStarted" class="hands">
+    <!-- Dealer Section -->
+    <div class="dealer">
+      <h3>Dealer 🕴️</h3>
+      <div class="cards">
+        <span class="card" [@fadeCard]>
+          {{ dealerHand[0].rank }}{{ dealerHand[0].suit }}
+        </span>
+
+        <ng-container *ngIf="!result">
+          <span class="card" id="hidden">🂠</span> <!-- Hidden Card -->
+        </ng-container>
+
+        <ng-container *ngIf="result">
+          <span
+            class="card {{ getSuitClass(card.suit) }}"
+            *ngFor="let card of dealerHand.slice(1)"
+            [@fadeCard]
+          >
+            {{ card.rank }}{{ card.suit }}
+          </span>
+        </ng-container>
+      </div>
+      <p *ngIf="result">Dealer Score: {{ cardService.getHandValue(dealerHand) }}</p>
+    </div>
+
+    <!-- Player Section -->
+    <div class="player">
+      <h3>Player 🧍</h3>
+      <div class="cards">
+        <span
+          class="card {{ getSuitClass(card.suit) }}"
+          *ngFor="let card of playerHand"
+          [@fadeCard]
+        >
+          {{ card.rank }}{{ card.suit }}
+        </span>
+      </div>
+      <p>Player Score: {{ cardService.getHandValue(playerHand) }}</p>
+
+      <div class="actions">
+        <button (click)="hit()">Hit</button>
+        <button (click)="stand()">Stand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div *ngIf="result" class="result-text">
+    <h2>{{ result }}</h2>
+  </div>
+
+  <!-- Game Over -->
+  <div *ngIf="gameOver" class="game-over">
+    <h2>Game Over 💀</h2>
+    <button (click)="resetGame()" style="background-color: #ffcc00; color: black;">Play Again</button>
+    <button (click)="goToMenu()">Main Menu</button>
+  </div>
+</div>
